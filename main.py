@@ -3,7 +3,7 @@ import config
 
 from analyse_data import make_data_array_from_parse_data
 from draw_graphics import *
-from stat_with_frequency import get_stat_with_frequency, get_top_using_words
+from stat_with_frequency import get_stat_with_frequency, get_top_using_words, get_next_prev_words
 
 bot = telebot.TeleBot(config.TELEGRAM_TOKEN)
 
@@ -170,6 +170,39 @@ def help(message):
         str_ans += string
     bot.send_message(message.chat.id, str_ans)
 
+
+@bot.message_handler(commands=['next'])
+def next_words(message):
+    try:
+        word = message.text.split(' ')[1]
+    except Exception:
+        bot.send_message(message.chat.id, 'Введите слово')
+        return
+    str_ans = ''
+    ans = get_next_prev_words(word)[0]
+    str_ans += 'Слова, следующие за данным: \n'
+    for item in ans:
+        if item in str_ans:
+            continue
+        str_ans += item + '\n'
+    bot.send_message(message.chat.id, str_ans)
+
+
+@bot.message_handler(commands=['prev'])
+def prev_words(message):
+    try:
+        word = message.text.split(' ')[1]
+    except Exception:
+        bot.send_message(message.chat.id, 'Введите слово')
+        return
+    str_ans = ''
+    ans = get_next_prev_words(word)[1]
+    str_ans += 'Слова, перед данным: \n'
+    for item in ans:
+        if item in str_ans:
+            continue
+        str_ans += item + '\n'
+    bot.send_message(message.chat.id, str_ans)
 
 # RUN
 bot.polling(none_stop=True)
